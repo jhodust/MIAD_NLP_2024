@@ -1,0 +1,114 @@
+sudo apt -y install python3
+sudo apt -y install python3-pip
+sudo apt -y install nginx
+pip install Flask
+pip install gunicorn
+pip install flask-restplus
+gunicorn -w 4 -b 0.0.0.0:8000 app:app
+
+
+docker build -t my-flask-app .
+docker run -p 5000:5000 my-flask-app
+
+
+
+from flask import Flask
+from flask_restplus import Api, Resource, fields
+
+app = Flask(__name__)
+
+# Definición API Flask
+api = Api(
+    app,
+    version='1.0',
+    title='Predicción Precio Vehiculos 2024',
+    description='Prediccion Precio Vehiculos API')
+
+ns = api.namespace('vehicles-price',
+     description='Estimador Precios Vehiculos')
+
+# Definición argumentos o parámetros de la API
+parser = api.parser()
+parser.add_argument(
+    'year',
+    type=int,
+    required=True,
+    help= 'year vehicle',
+    location='args')
+
+
+resource_fields = api.model('Resource', {
+    'result': fields.String,
+})
+
+@ns.route('/')
+class PhishingApi(Resource):
+
+    @api.doc(parser=parser)
+    @api.marshal_with(resource_fields)
+    def get(self):
+        args = parser.parse_args()
+
+        return {
+         "result": args['year']
+        }, 200
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app = Flask(__name__)
+
+@app.route('/api', methods=['GET'])
+def api():
+    # Obtener el parámetro 'year' de la URL
+   year = request.args.get('year')
+    mileage = request.args.get('mileage')
+    state = request.args.get('state')
+    make = request.args.get('make')
+    model = request.args.get('model')
+
+    # Verificar si se proporcionó el parámetro 'year'
+    if year is None:
+        return jsonify({'error': 'Se requiere el parámetro "year"'}), 400
+    if mileage is None:
+        return jsonify({'error': 'Se requiere el parámetro "mileage"'}), 400
+    if state is None:
+        return jsonify({'error': 'Se requiere el parámetro "state"'}), 400
+    if make is None:
+        return jsonify({'error': 'Se requiere el parámetro "make"'}), 400
+    if model is None:
+        return jsonify({'error': 'Se requiere el parámetro "model"'}), 400
+
+    # Realizar alguna operación con el parámetro
+    result =  23456.557
+
+    # Devolver el resultado
+    return jsonify({'precio': result})
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
